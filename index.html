@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FakeStore - Product Listing</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header id="main-header">
+    <div class="header-left">
+      <img src="https://ik.imgkit.net/ikmedia/logo/light_T4buIzohVH.svg" alt="FakeStore Logo" class="logo" />
+    </div>
+     
+    <div class="header-middle">
+      <h1>FakeStore</h1>
+    </div>
+
+    <div class="header-right">
+      <div class="header-icon profile">
+        <img src="https://img.icons8.com/ios-filled/24/000000/user-male-circle.png" alt="Profile" />
+      </div>
+      <div class="header-icon cart">
+        <img src="https://img.icons8.com/ios-filled/24/000000/shopping-cart.png" alt="Cart" />
+        <span id="cart-count">0</span>
+      </div>
+      <div class="header-icon wishlist">
+        <img src="https://img.icons8.com/ios/24/000000/like--v1.png" alt="Wishlist" />
+        <span id="wishlist-count">0</span>
+      </div>
+    </div>
+  </header>
+
+        <main>
+
+          <div id="page-layout">
+            <!-- 🔹 Filter Panel (New) -->
+            <aside id="filter-panel">
+              <h3 class="filter-title">FILTERS</h3>
+              <div class="filter-section">
+                <h4 class="filter-subtitle">CATEGORIES</h4>
+                <div id="category-options">
+                  <!-- JS will populate checkboxes here -->
+                </div>
+              </div>
+            </aside>
+
+
+        <!-- 🔹 Product Section -->
+          <section id="product-list-section">
+            <h2 id="product-heading">All Products</h2>
+            <div id="product-grid"></div>
+          </section>
+
+        </main>
+      
+        <script src="script.js"></script> 
+</body>
+</html>
