@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cart - FakeStore</title>
+  <link rel="stylesheet" href="cart.css" />
+</head>
+<body>
+
+  <!-- 🔹 Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <img src="https://ik.imgkit.net/ikmedia/logo/light_T4buIzohVH.svg" alt="FakeStore Logo" class="logo" />
+    </div>
+    <div class="header-middle">
+      <h1 id="main-heading">Fakestore</h1>
+    </div>
+    <div class="header-right">
+      <div class="header-icon profile">
+        <img src="https://img.icons8.com/ios-filled/24/000000/user-male-circle.png" alt="Profile" />
+      </div>
+    </div>
+  </header>
+
+  <!-- 🔹 Main Content -->
+  <main id="cart-main">
+
+    <!-- Left Section: Cart Items -->
+    <section id="cart-items">
+      <h2>Your Cart</h2>
+      <div id="cart-items-container">
+        <!-- JS will render individual cart items here -->
+      </div>
+    </section>
+
+    <!-- Right Section: Summary -->
+    <section id="cart-summary">
+      <h3>Price Details</h3>
+      <div class="summary-line"><span>Total Items:</span> <span id="total-items">0</span></div>
+      <div class="summary-line"><span>Total Price:</span> <span id="total-price">$0</span></div>
+      <button id="place-order-btn">Place Order</button>
+    </section>
+
+  </main>
+
+  <script src="cart.js"></script>
+</body>
+</html>

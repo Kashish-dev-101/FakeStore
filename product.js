@@ -1,12 +1,13 @@
 "use-strict";
 
+// Getting the ID from the URL 
 const queryString = new URLSearchParams(window.location.search);
 console.log(queryString);
 
-const id = queryString.get("id")
+const id = queryString.get("id");
 console.log(id);
 
-baseURL = "https://fakestoreapi.com";
+const baseURL = "https://fakestoreapi.com";
 
 const productImage = document.querySelector("#main-product-image");
 console.log(productImage);
@@ -32,63 +33,103 @@ console.log(ratingCount);
 const mainHeading = document.querySelector("#main-heading");
 console.log(mainHeading);
 
-// Function to reneder product:
 
-const renderProduct = async(data)=>{
-    similarProductDiv.innerHTML = "";
-
-    console.log(data.image);
-    productImage.src = data.image;
-    console.log(data.title);
-    productTitle.textContent = data.title;
-    console.log(data.description);
-    productDescription.textContent = data.description; 
-    console.log(data.price);
-    productPrice.textContent = `$${data.price}`
-
-    ratingValue.textContent = data.rating.rate;
-    ratingCount.textContent = `${data.rating.count} Ratings`;
-    
-    console.log(data.category);
-    const urlEncCategory = encodeURIComponent(data.category);
-    console.log(urlEncCategory);
-    const categoryImages = await fetch(`${baseURL}/products/category/${urlEncCategory}`);
-    const jsCategoryImages = await categoryImages.json();
-    console.log(jsCategoryImages);
-    for(let img of jsCategoryImages)
-    {
-        console.log(img.image);
-        const imgElm = document.createElement("img");
-        imgElm.src = img.image;
-        similarProductDiv.append(imgElm);
-        imgElm.addEventListener("click", async()=>{
-            const response = await fetch(`${baseURL}/products/${img.id}`);
-            console.log(response);
-            const data = await response.json();
-            console.log(data);
-            renderProduct(data);
-        })
-        
+const updateCartCount = () => {
+    const cart = JSON.parse(localStorage.getItem("cartItems")) || [];
+    const cartCount = document.querySelector("#cart-count");
+    if (cartCount) {
+      cartCount.textContent = cart.length;
     }
+  };
 
-}
+updateCartCount();
 
+// Function to render product
+const renderProduct = async (data) => {
+  similarProductDiv.innerHTML = "";
 
+  // Main product details
+  productImage.src = data.image;
+  productTitle.textContent = data.title;
+  productDescription.textContent = data.description;
+  productPrice.textContent = `$${data.price}`;
 
-// function to fetch the product of the given ID
-const fetchProduct = async()=>{
-      const response = await fetch(`${baseURL}/products/${id}`);
-      console.log(response);
+  ratingValue.textContent = data.rating.rate;
+  ratingCount.textContent = `${data.rating.count} Ratings`;
+
+  // Similar products from same category
+  const urlEncCategory = encodeURIComponent(data.category);
+  const categoryImages = await fetch(`${baseURL}/products/category/${urlEncCategory}`);
+  const jsCategoryImages = await categoryImages.json();
+
+  for (let img of jsCategoryImages) {
+    const imgElm = document.createElement("img");
+    imgElm.src = img.image;
+    similarProductDiv.append(imgElm);
+
+    imgElm.addEventListener("click", async () => {
+      const response = await fetch(`${baseURL}/products/${img.id}`);
       const data = await response.json();
-      console.log(data);
       renderProduct(data);
-        
-}
+    });
+  }
 
-const mainPageRed = () =>{
-    window.location.href = "index.html";
-}
+  const addToCartBtn = document.querySelector(".add-to-cart");
+
+  // Ensure cart is always an array from localStorage
+  let cart = JSON.parse(localStorage.getItem("cartItems")) || [];
+  
+  // Check if current item is already in cart
+  const isInCart = cart.some(item => item.id === data.id);
+  if (isInCart) {
+    addToCartBtn.textContent = "Go to Cart";
+  }
+  
+  // Handle button click
+  addToCartBtn.addEventListener("click", () => {
+    // Re-fetch current cart from storage
+    let cart = JSON.parse(localStorage.getItem("cartItems")) || [];
+  
+    const existingItem = cart.find(item => item.id === data.id);
+  
+    if (!existingItem) {
+      const cartItem = {
+        id: data.id,
+        title: data.title,
+        price: data.price,
+        image: data.image,
+        quantity: 1
+      };
+      cart.push(cartItem);
+      localStorage.setItem("cartItems", JSON.stringify(cart));
+  
+      addToCartBtn.textContent = "Go to Cart";
+    } else {
+      // Redirect if already in cart
+      window.location.href = "cart.html";
+    }
+  
+    // Update cart count in UI
+    updateCartCount();
+  });
+  
+
+};
+
+
+// Function to fetch the product of the given ID
+const fetchProduct = async () => {
+  const response = await fetch(`${baseURL}/products/${id}`);
+  const data = await response.json();
+  renderProduct(data);
+};
+
+// Redirect to main page on logo click
+const mainPageRed = () => {
+  window.location.href = "index.html";
+};
 
 document.addEventListener("DOMContentLoaded", fetchProduct);
 mainHeading.addEventListener("click", mainPageRed);
+
 

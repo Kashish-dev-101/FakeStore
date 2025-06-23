@@ -223,3 +223,22 @@ body {
 .wishlist-btn:hover {
   transform: scale(1.2);
 }
+
+.image-zoom-container {
+  width: 100%;
+  height: 250px; /* or match your design */
+  overflow: hidden;
+  position: relative;
+  border-radius: 8px;
+}
+
+.image-zoom-container img {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s ease;
+  object-fit: contain;
+}
+
+.image-zoom-container:hover img {
+  transform: scale(1.15); /* Zoom level */
+}

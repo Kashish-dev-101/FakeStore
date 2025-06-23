@@ -9,6 +9,14 @@ const selectedCategories = new Set();
 let whishList = JSON.parse(localStorage.getItem("whishListItems")) || []; //Returns an Array
 
 
+const updateCartCount = () => {
+  const cart = JSON.parse(localStorage.getItem("cartItems")) || [];
+  const cartCount = document.querySelector("#cart-count");
+  if (cartCount) {
+    cartCount.textContent = cart.length;
+  }
+};
+
 
 // Function to render the product Data
 const renderProductCard = (data,category) => {
@@ -25,12 +33,15 @@ const renderProductCard = (data,category) => {
       card.setAttribute("data-category", category);
 
       //console.log(card);
+      const imgWrapper = document.createElement("div");
+      imgWrapper.classList.add("image-zoom-container");
 
       const img = document.createElement("img");
       img.classList.add("product-images");
       img.src = cdnURL;
       img.alt = data.title;
       img.loading = "lazy";
+      imgWrapper.append(img);
 
       const title = document.createElement("div");
       title.textContent = data.title;
@@ -39,17 +50,18 @@ const renderProductCard = (data,category) => {
       const price = document.createElement("div");
       price.textContent = `$${data.price}`;
       price.classList.add("product-price");
-
+      
+      /*
       const wishlistBtn = document.createElement("button");
       wishlistBtn.classList.add("wishlist-button");
       wishlistBtn.innerHTML = '🤍 WISHLIST';
-    
+      */
       
       productGrid.append(card);
-      card.append(img);
+      card.append(imgWrapper);
       card.append(title);
       card.append(price);
-      card.append(wishlistBtn);
+      //card.append(wishlistBtn);
 
     // Event listener to redirect to the product page when an Image is clicked 
 
@@ -59,6 +71,7 @@ const renderProductCard = (data,category) => {
     })
 
       // Fucntion to be used in the Click WhishList handler (work in progress)
+      /*
       wishlistBtn.addEventListener("click", ()=>{
       if(!whishList.includes(data.id)){
         whishList.push(data.id);
@@ -69,7 +82,7 @@ const renderProductCard = (data,category) => {
         wishListCount.textContent = count;
 
       }
-    })
+    }) */
 }
 
 
@@ -161,6 +174,7 @@ const fetchCategories = async () => {
 // Event Listener to show product Images when the page is loaded
 document.addEventListener("DOMContentLoaded", getProductData);
 document.addEventListener("DOMContentLoaded", fetchCategories);
+document.addEventListener("DOMContentLoaded", updateCartCount);
 
 
 
