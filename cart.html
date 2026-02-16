@@ -5,18 +5,28 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cart - FakeStore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="cart.css" />
 </head>
 <body>
 
-  <!-- 🔹 Header -->
+  <!-- Top announcement bar -->
+  <div class="announcement-bar">
+    Free shipping on orders over $50 — Shop Now
+  </div>
+
+  <!-- Header -->
   <header id="main-header">
     <div class="header-left">
       <img src="https://ik.imgkit.net/ikmedia/logo/light_T4buIzohVH.svg" alt="FakeStore Logo" class="logo" />
     </div>
-    <div class="header-middle">
-      <h1 id="main-heading">Fakestore</h1>
+
+    <div class="header-middle" id="main-heading">
+      <span class="brand-name">FakeStore</span>
     </div>
+
     <div class="header-right">
       <div class="header-icon profile">
         <img src="https://img.icons8.com/ios-filled/24/000000/user-male-circle.png" alt="Profile" />
@@ -24,7 +34,7 @@
     </div>
   </header>
 
-  <!-- 🔹 Main Content -->
+  <!-- Main Content -->
   <main id="cart-main">
 
     <!-- Left Section: Cart Items -->
@@ -38,13 +48,24 @@
     <!-- Right Section: Summary -->
     <section id="cart-summary">
       <h3>Price Details</h3>
-      <div class="summary-line"><span>Total Items:</span> <span id="total-items">0</span></div>
-      <div class="summary-line"><span>Total Price:</span> <span id="total-price">$0</span></div>
+      <div class="summary-line"><span>Total Items</span> <span id="total-items">0</span></div>
+      <div class="summary-line total"><span>Total Price</span> <span id="total-price">$0</span></div>
       <button id="place-order-btn">Place Order</button>
     </section>
 
   </main>
 
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <span class="brand-name">FakeStore</span>
+      <p>Powered by <a href="https://fakestoreapi.com" target="_blank">FakeStoreAPI</a> &amp; <a href="https://imagekit.io" target="_blank">ImageKit</a></p>
+    </div>
+  </footer>
+
+  <!-- ImageKit JS SDK — for CDN URL construction and responsive image attributes -->
+  <script src="https://unpkg.com/@imagekit/javascript@5.1.0/dist/imagekit.min.js"></script>
+  <script src="config.js"></script>
   <script src="cart.js"></script>
 </body>
 </html>

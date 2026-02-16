@@ -5,52 +5,76 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FakeStore - Product Listing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
+  <!-- Top announcement bar -->
+  <div class="announcement-bar">
+    Free shipping on orders over $50 — Shop Now
+  </div>
+
+  <!-- Header -->
   <header id="main-header">
     <div class="header-left">
       <img src="https://ik.imgkit.net/ikmedia/logo/light_T4buIzohVH.svg" alt="FakeStore Logo" class="logo" />
     </div>
-     
+
     <div class="header-middle">
-      <h1>Fakestore</h1>
+      <span class="brand-name">FakeStore</span>
     </div>
 
     <div class="header-right">
       <div class="header-icon profile">
         <img src="https://img.icons8.com/ios-filled/24/000000/user-male-circle.png" alt="Profile" />
       </div>
-      <div class="header-icon cart">
+      <div class="header-icon cart" onclick="window.location.href='cart.html'">
         <img src="https://img.icons8.com/ios-filled/24/000000/shopping-cart.png" alt="Cart" />
         <span id="cart-count">0</span>
       </div>
     </div>
   </header>
 
-        <main>
+  <!-- Main Content -->
+  <main>
+    <div id="page-layout">
 
-          <div id="page-layout">
-            <!-- 🔹 Filter Panel (New) -->
-            <aside id="filter-panel">
-              <h3 class="filter-title">FILTERS</h3>
-              <div class="filter-section">
-                <h4 class="filter-subtitle">CATEGORIES</h4>
-                <div id="category-options">
-                  <!-- JS will populate checkboxes here -->
-                </div>
-              </div>
-            </aside>
+      <!-- Filter Sidebar -->
+      <aside id="filter-panel">
+        <h3 class="filter-title">Filters</h3>
+        <div class="filter-section">
+          <h4 class="filter-subtitle">Categories</h4>
+          <div id="category-options">
+            <!-- JS will populate checkboxes here -->
+          </div>
+        </div>
+      </aside>
 
+      <!-- Product Section -->
+      <section id="product-list-section">
+        <div class="section-header">
+          <h2 id="product-heading">All Products</h2>
+        </div>
+        <div id="product-grid"></div>
+      </section>
 
-        <!-- 🔹 Product Section -->
-          <section id="product-list-section">
-            <h2 id="product-heading">All Products</h2>
-            <div id="product-grid"></div>
-          </section>
+    </div>
+  </main>
 
-        </main>
-      
-        <script src="script.js"></script> 
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <span class="brand-name">FakeStore</span>
+      <p>Powered by <a href="https://fakestoreapi.com" target="_blank">FakeStoreAPI</a> &amp; <a href="https://imagekit.io" target="_blank">ImageKit</a></p>
+    </div>
+  </footer>
+
+  <!-- ImageKit JS SDK — for CDN URL construction and responsive image attributes -->
+  <script src="https://unpkg.com/@imagekit/javascript@5.1.0/dist/imagekit.min.js"></script>
+  <script src="config.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

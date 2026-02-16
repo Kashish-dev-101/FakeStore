@@ -1,14 +1,61 @@
-"use-strict";
+"use strict";
 
-const baseURL = "https://fakestoreapi.com"
+// ----- DOM References -----
 const productGrid = document.querySelector("#product-grid");
 const categoryOptions = document.querySelector("#category-options");
 const productHeading = document.querySelector("#product-heading");
-const wishListCount = document.querySelector("#wishlist-count");
 const selectedCategories = new Set();
-let whishList = JSON.parse(localStorage.getItem("whishListItems")) || []; //Returns an Array
 
+// ----- Config from config.js (loaded before this script) -----
+const baseURL = CONFIG.FAKESTORE_BASE_URL;
+const IK_URL_ENDPOINT = CONFIG.IK_URL_ENDPOINT;
 
+// ----- Responsive image sizes matching the product grid layout -----
+// Grid: repeat(auto-fill, minmax(250px, 1fr)) inside a flex layout with 200px sidebar
+// ~3 columns on large screens, ~2 on medium, ~1 on small
+const RESPONSIVE_SIZES =
+  "(max-width: 540px) 100vw, (max-width: 900px) 45vw, (max-width: 1200px) 30vw, 25vw";
+
+// Number of above-the-fold images that get high fetch priority
+// (roughly the first row of the grid — 3-4 columns on desktop)
+const ABOVE_FOLD_COUNT = 4;
+
+/**
+ * Extract the path from a FakeStoreAPI image URL for use with ImageKit.
+ *
+ * e.g. "https://fakestoreapi.com/img/81fPKd-2AYL.png" → "/img/81fPKd-2AYL.png"
+ */
+function getImagePath(fakeStoreUrl) {
+  return new URL(fakeStoreUrl).pathname;
+}
+
+/**
+ * Get responsive image attributes (src, srcSet, sizes) from ImageKit SDK.
+ *
+ * Generates a srcset with multiple width variants so the browser picks
+ * the best size based on rendered width and device pixel ratio.
+ */
+function getResponsiveAttrs(imagePath) {
+  return ImageKit.getResponsiveImageAttributes({
+    urlEndpoint: IK_URL_ENDPOINT,
+    src: imagePath,
+    sizes: RESPONSIVE_SIZES,
+    transformation: [{ format: "auto" }, { quality: 80 }],
+  });
+}
+
+/**
+ * Build a single ImageKit-optimised URL as a fallback.
+ */
+function buildImageKitUrl(imagePath) {
+  return ImageKit.buildSrc({
+    urlEndpoint: IK_URL_ENDPOINT,
+    src: imagePath,
+    transformation: [{ format: "auto" }, { quality: 80 }],
+  });
+}
+
+// ----- Cart count sync -----
 const updateCartCount = () => {
   const cart = JSON.parse(localStorage.getItem("cartItems")) || [];
   const cartCount = document.querySelector("#cart-count");
@@ -17,98 +64,82 @@ const updateCartCount = () => {
   }
 };
 
+/**
+ * Create and append a product card to the grid.
+ *
+ * @param {object} data     - Product object from FakeStoreAPI
+ * @param {string} category - Category name (used as data attribute for filtering)
+ * @param {number} index    - Position in the current render batch
+ *
+ * Loading strategy:
+ * - First 4 images (above the fold): fetchpriority="high" for faster LCP
+ * - Remaining images (below the fold): loading="lazy" to save bandwidth
+ */
+const renderProductCard = (data, category, index) => {
+  const card = document.createElement("div");
+  card.classList.add("product-card");
+  card.setAttribute("data-category", category);
 
-// Function to render the product Data
-const renderProductCard = (data,category) => {
-      console.log(data);
-      console.log(category);
-      const imageURL = data.image;
-      console.log(imageURL);
-      const cdnURL = imageURL.replace("https://fakestoreapi.com", "https://ik.imagekit.io/Kashish12345/WebApp"); // Implementing ImageKit CDN for performance
-      console.log(cdnURL);
-      //
-      //console.log(imageURL);
-      const card = document.createElement("div");
-      card.classList.add("product-card");
-      card.setAttribute("data-category", category);
+  const imgWrapper = document.createElement("div");
+  imgWrapper.classList.add("image-zoom-container");
 
-      //console.log(card);
-      const imgWrapper = document.createElement("div");
-      imgWrapper.classList.add("image-zoom-container");
+  const img = document.createElement("img");
+  img.classList.add("product-images");
 
-      const img = document.createElement("img");
-      img.classList.add("product-images");
-      img.src = cdnURL;
-      img.alt = data.title;
-      img.loading = "lazy";
-      imgWrapper.append(img);
+  // Build responsive image attributes via ImageKit SDK
+  const imagePath = getImagePath(data.image);
+  const responsive = getResponsiveAttrs(imagePath);
 
-      const title = document.createElement("div");
-      title.textContent = data.title;
-      title.classList.add("product-title");
-
-      const price = document.createElement("div");
-      price.textContent = `$${data.price}`;
-      price.classList.add("product-price");
-      
-      /*
-      const wishlistBtn = document.createElement("button");
-      wishlistBtn.classList.add("wishlist-button");
-      wishlistBtn.innerHTML = '🤍 WISHLIST';
-      */
-      
-      productGrid.append(card);
-      card.append(imgWrapper);
-      card.append(title);
-      card.append(price);
-      //card.append(wishlistBtn);
-
-    // Event listener to redirect to the product page when an Image is clicked 
-
-    img.addEventListener("click", ()=>{
-      console.log(data.id);
-      window.location.href = `product.html?id=${data.id}`;
-    })
-
-      // Fucntion to be used in the Click WhishList handler (work in progress)
-      /*
-      wishlistBtn.addEventListener("click", ()=>{
-      if(!whishList.includes(data.id)){
-        whishList.push(data.id);
-        localStorage.setItem("whishListItems", JSON.stringify(whishList));
-        let count = Number(localStorage.getItem("whishListCount")) || 0; // returns count 
-        count++;
-        localStorage.setItem("whishListCount", count);
-        wishListCount.textContent = count;
-
-      }
-    }) */
-}
-
-
-// Function to fetch and render the product Data
-const getProductData = async()=>{
-  const productData = await fetch(`${baseURL}/products`);
-  console.log(productData);
-  const response = await productData.json();
-  console.log(response);
-
-  for (let data of response ){
-      console.log(data);
-      renderProductCard(data);
+  if (responsive) {
+    img.src = responsive.src;
+    if (responsive.srcSet) img.setAttribute("srcset", responsive.srcSet);
+    if (responsive.sizes) img.setAttribute("sizes", responsive.sizes);
+  } else {
+    img.src = buildImageKitUrl(imagePath);
   }
-}
 
-// Function to fetch the categories using the API and then add it to the HTML also it takes care of multiple catrgory selection
+  // Above-the-fold: high priority for faster LCP
+  // Below-the-fold: lazy load to defer downloading
+  if (index < ABOVE_FOLD_COUNT) {
+    img.fetchPriority = "high";
+  } else {
+    img.loading = "lazy";
+  }
 
+  img.alt = data.title;
+  imgWrapper.append(img);
+
+  const title = document.createElement("div");
+  title.textContent = data.title;
+  title.classList.add("product-title");
+
+  const price = document.createElement("div");
+  price.textContent = `$${data.price}`;
+  price.classList.add("product-price");
+
+  card.append(imgWrapper, title, price);
+  productGrid.append(card);
+
+  // Navigate to product detail page on image click
+  img.addEventListener("click", () => {
+    window.location.href = `product.html?id=${data.id}`;
+  });
+};
+
+// ----- Fetch and render all products -----
+const getProductData = async () => {
+  const productData = await fetch(`${baseURL}/products`);
+  const response = await productData.json();
+
+  response.forEach((data, index) => renderProductCard(data, "", index));
+};
+
+// ----- Fetch categories and set up filter logic -----
 const fetchCategories = async () => {
-  const rawcategorydata = await fetch(`${baseURL}/products/categories`);
-  console.log(rawcategorydata);
-  const categoryData = await rawcategorydata.json();
-  console.log(categoryData); // This part fetches the category options
+  const rawCategoryData = await fetch(`${baseURL}/products/categories`);
+  const categoryData = await rawCategoryData.json();
 
   for (let category of categoryData) {
-    console.log(category);
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     const label = document.createElement("label");
@@ -116,11 +147,9 @@ const fetchCategories = async () => {
     label.prepend(checkbox);
     categoryOptions.appendChild(label);
 
-    // logic for display product when a category is checked or unchecked
-    
     checkbox.addEventListener("change", async () => {
       if (checkbox.checked) {
-        selectedCategories.add(category); // add categories to a Set when a checkbox is checked 
+        selectedCategories.add(category);
       } else {
         selectedCategories.delete(category);
         document.querySelectorAll(`[data-category="${category}"]`).forEach((card) => {
@@ -128,54 +157,39 @@ const fetchCategories = async () => {
         });
       }
 
-      const selectedList = Array.from(selectedCategories); // convert the set to an Array using from method
-      console.log(selectedList);
-      if (selectedList.length > 0) { // condition to create a string if the size of the Array is greater than 0 
+      const selectedList = Array.from(selectedCategories);
+      if (selectedList.length > 0) {
         productHeading.innerText = selectedList.join(" / ");
       }
 
-      // condition to check if the first checkbox is clicked and making the HTML grid empty for that before rendering the elements 
+      // First category selected — clear grid and render that category
       if (selectedCategories.size === 1) {
         const urlEncCategory = encodeURIComponent(category);
         const categoryImages = await fetch(`${baseURL}/products/category/${urlEncCategory}`);
         const jsCategoryImages = await categoryImages.json();
-        //console.log(jsCategoryImages);
 
         productGrid.innerHTML = "";
-
-        for (let data of jsCategoryImages) {
-          renderProductCard(data, category);
-        }
+        jsCategoryImages.forEach((data, index) => renderProductCard(data, category, index));
 
       } else if (selectedCategories.size > 1) {
+        // Additional category — append without clearing
         const urlEncCategory = encodeURIComponent(category);
         const categoryImages = await fetch(`${baseURL}/products/category/${urlEncCategory}`);
         const jsCategoryImages = await categoryImages.json();
-        //console.log(jsCategoryImages);
 
-        for (let data of jsCategoryImages) {
-          renderProductCard(data, category);
-        }
+        jsCategoryImages.forEach((data, index) => renderProductCard(data, category, index));
 
       } else {
-        // condition when no categories are selected (Set size = 0)
+        // No categories selected — fallback to all products
         productGrid.innerHTML = "";
         productHeading.innerText = "All Products";
-        getProductData(); // fallback to initial full product view
+        getProductData();
       }
     });
   }
 };
 
-
-
-
-
-// Event Listener to show product Images when the page is loaded
+// ----- Init on page load -----
 document.addEventListener("DOMContentLoaded", getProductData);
 document.addEventListener("DOMContentLoaded", fetchCategories);
 document.addEventListener("DOMContentLoaded", updateCartCount);
-
-
-
-
