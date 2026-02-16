@@ -1,75 +1,66 @@
 # FakeStore
-Fake e-commerce webapp
 
-🛍️ JS E-Commerce Web App
-A fully functional e-commerce front-end built using vanilla HTML, CSS, and JavaScript, powered by the FakeStoreAPI. The app features product listings, filtering, dynamic product pages, cart functionality, and wishlist management — all using localStorage for data persistence.
+A fully functional e-commerce front-end built with vanilla HTML, CSS, and JavaScript. Powered by the FakeStoreAPI for product data, ImageKit JS SDK for responsive image delivery, and localStorage for cart persistence.
 
-🚀 Features
-✅ Product Listing with Category Filtering
+**Live Demo:** https://kashish-dev-101.github.io/FakeStore/
 
-✅ Individual Product Pages
+## Features
 
-✅ Add to Cart with Quantity & LocalStorage
+- Product listing with category filtering (multi-select via checkboxes)
+- Individual product pages with similar products section
+- Add to Cart with localStorage persistence across pages
+- Cart count badge synced across all pages
+- Responsive images via ImageKit SDK (srcset + sizes)
+- fetchpriority="high" for above-the-fold images, lazy loading for the rest
+- Clean Apple-inspired UI with Inter font
 
-✅ Add to Wishlist with Persistent State
+## Tech Stack
 
-✅ Cart Count & Wishlist Count Sync Across Pages
+- HTML5, CSS3, Vanilla JavaScript (ES6+)
+- [FakeStoreAPI](https://fakestoreapi.com) — product data
+- [ImageKit JS SDK](https://www.npmjs.com/package/@imagekit/javascript) — responsive image URLs, format/quality transforms
+- localStorage — cart state persistence
 
-✅ Similar Products Section on Product Page
+## Project Structure
 
-✅ Smooth Page Navigation
+```
+FakeStore/
+├── index.html          # Homepage — product grid + category filters
+├── style.css           # Styles for homepage
+├── script.js           # JS for homepage (fetch products, render grid, filters)
+├── product.html        # Product detail page
+├── product.css         # Styles for product page
+├── product.js          # JS for product page (fetch product, similar items, add to cart)
+├── cart.html           # Cart page
+├── cart.css            # Styles for cart page
+├── cart.js             # JS for cart page (render cart items, total, remove)
+├── config.js           # Shared config (API base URL, ImageKit endpoint)
+├── config.example.js   # Template config for reference
+└── README.md
+```
 
-🔄 Persistent State Using LocalStorage
+## Setup
 
-✨ Clean and Responsive UI
+1. Clone the repository
+2. Copy `config.example.js` to `config.js` and update the ImageKit URL endpoint if needed
+3. Open `index.html` in any modern browser (no server setup required)
 
-📂 Folder Structure
-.
-├── index.html               # Homepage (product listing)
-├── product.html             # Product detail page
-├── cart.html                # Cart items display
-├── wishlist.html            # Wishlist page
-├── product.js               # JS for product detail logic
-├── script.js                # JS for homepage
-├── cart.js                  # JS for cart logic
-├── wishlist.js              # JS for wishlist logic
-├── styles/
-│   ├── index.css
-│   ├── product.css
-│   ├── cart.css
-│   └── wishlist.css
-🧠 Tech Used
-HTML5 + CSS3
+## ImageKit Integration
 
-Vanilla JavaScript (ES6+)
+All product images are served through ImageKit instead of directly from FakeStoreAPI. The JS SDK handles:
 
-FakeStoreAPI for products
+- **Responsive images** — `getResponsiveImageAttributes()` generates `src`, `srcset`, and `sizes` so the browser picks the optimal image width
+- **Format & quality** — `format: auto` (WebP/AVIF where supported), `quality: 80`
+- **Loading strategy** — First few images use `fetchpriority="high"` for faster LCP; the rest use `loading="lazy"`
 
-LocalStorage for state persistence
+Each page defines its own `sizes` value matching its CSS layout:
+| Page | Context | sizes |
+|------|---------|-------|
+| Homepage | Product grid cards | `(max-width: 540px) 100vw, (max-width: 900px) 45vw, (max-width: 1200px) 30vw, 25vw` |
+| Product | Main product image | `(max-width: 900px) 80vw, 400px` |
+| Product | Similar thumbnails | `140px` |
+| Cart | Cart item thumbnails | `100px` |
 
-DOM manipulation and event handling
+## Author
 
-🔧 Installation & Usage
-Clone the repository
-
-git clone https://github.com/your-username/js-ecommerce-app.git
-cd js-ecommerce-app
-Open index.html in any modern browser
-(No server setup needed)
-
-Browse, add to cart/wishlist, and view products across pages.
-
-🛠️ Future Enhancements
- Search feature for products
-
- Responsive improvements for mobile
-
- Sort by price/popularity
-
- Add loader animations during fetch
-
- Use a back-end for real cart/auth persistence
-
-🧑‍💻 Author
-Ashish — built with ❤️ while learning JavaScript hands-on.
-Feel free to fork and enhance!
+Ashish
